@@ -5,7 +5,7 @@ const createRequestBuilder = require('@commercetools/api-request-builder').creat
 const requestBuilder = createRequestBuilder(); // todo, set this in the app settings.
 
 /* GET Product page. */
-router.get('/:productId', function(req, res) {
+router.get('/:productId', function(req, res, next) {
   const client = req.app.get('CTClient');
   const projectKey = req.app.get('projectKey')
   console.log(req.params.productId);
@@ -19,15 +19,17 @@ router.get('/:productId', function(req, res) {
       uri: productUri,
       method: "GET"
     }
-    product = client.execute(request)
+    client.execute(request)
       .then(result => result.body.results)
       .then(apiProducts => {
-        return apiProducts.map(p => {
-          if (p && p.masterData && p.masterData.current ) {
-            res.render('product', { title: 'Product', product: p });
-          }
-        });
-      });
+        if (apiProducts.length) {
+          p = apiProducts[0];
+          res.render('product', { title: 'Product', product: p });
+        } else {
+          next();
+        }
+      })
+      .catch(next);
 
 });
 
