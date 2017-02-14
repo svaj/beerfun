@@ -28,6 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('CTClient', commercetoolsClient);
+app.set('projectKey', process.env.PROJECT_KEY);
 
 app.use('/', index);
 app.use('/product', product);
